@@ -1,0 +1,64 @@
+defaultTasks 'clean', 'test', 'aggregate'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:5.3.2"
+        classpath "net.serenity-bdd:serenity-single-page-report:5.3.2"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+ext {
+    serenity_version                        = '5.3.2'
+    cucumber_junit_version                  = "7.34.2"
+    logback_classic_version                 = "1.2.10"
+}
+
+dependencies {
+    testImplementation "net.serenity-bdd:serenity-core:${serenity_version}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenity_version}"
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenity_version}"
+    testImplementation "net.serenity-bdd:serenity-screenplay:${serenity_version}"
+    testImplementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenity_version}"
+    testImplementation "net.serenity-bdd:serenity-ensure:${serenity_version}"
+
+    testImplementation "io.cucumber:cucumber-junit:${cucumber_junit_version}"
+    testImplementation "junit:junit:4.13.2"
+
+    implementation "ch.qos.logback:logback-classic:${logback_classic_version}"
+}
+
+test {
+    def baseUrl = System.getProperty("webdriver.base.url")
+    def backendUrl = System.getProperty("foodtech.backend.base.url")
+    if (baseUrl) systemProperty "webdriver.base.url", baseUrl
+    if (backendUrl) systemProperty "foodtech.backend.base.url", backendUrl
+    finalizedBy aggregate
+}
+
+serenity {
+    reports = ["single-page-html", "html"]
+}
+
+aggregate.mustRunAfter test
+
+gradle.startParameter.continueOnFailure = true
