@@ -29,36 +29,43 @@ java {
 
 ext {
     serenity_version                        = '5.3.2'
-    cucumber_junit_version                  = "7.34.2"
+    junit_platform_launcher_version         = "1.13.0"
+    cucumber_junit_platform_engine_version  = "7.34.2"
+    junit_platform_suite_version            = "6.0.3"
+    junit_jupiter_engine_version            = "6.0.3"
+    junit_vintage_engine_version            = "6.0.3"
     logback_classic_version                 = "1.2.10"
 }
 
 dependencies {
     testImplementation "net.serenity-bdd:serenity-core:${serenity_version}"
-    testImplementation "net.serenity-bdd:serenity-junit:${serenity_version}"
     testImplementation "net.serenity-bdd:serenity-cucumber:${serenity_version}"
     testImplementation "net.serenity-bdd:serenity-screenplay:${serenity_version}"
     testImplementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenity_version}"
     testImplementation "net.serenity-bdd:serenity-ensure:${serenity_version}"
 
-    testImplementation "io.cucumber:cucumber-junit:${cucumber_junit_version}"
-    testImplementation "junit:junit:4.13.2"
+    // JUnit Platform (required for Cucumber JUnit 5 engine)
+    testImplementation "org.junit.platform:junit-platform-launcher:${junit_platform_launcher_version}"
+    testImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumber_junit_platform_engine_version}"
+    testImplementation "org.junit.platform:junit-platform-suite:${junit_platform_suite_version}"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_engine_version}"
+    testImplementation "org.junit.vintage:junit-vintage-engine:${junit_vintage_engine_version}"
 
     implementation "ch.qos.logback:logback-classic:${logback_classic_version}"
 }
 
 test {
+    useJUnitPlatform()
     def baseUrl = System.getProperty("webdriver.base.url")
     def backendUrl = System.getProperty("foodtech.backend.base.url")
     if (baseUrl) systemProperty "webdriver.base.url", baseUrl
     if (backendUrl) systemProperty "foodtech.backend.base.url", backendUrl
-    finalizedBy aggregate
 }
 
 serenity {
     reports = ["single-page-html", "html"]
 }
 
-aggregate.mustRunAfter test
-
 gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate, reports)
