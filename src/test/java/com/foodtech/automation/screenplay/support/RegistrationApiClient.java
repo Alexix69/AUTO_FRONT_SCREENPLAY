@@ -30,6 +30,44 @@ public class RegistrationApiClient {
         sendRegistration(body);
     }
 
+    public static String loginAndGetToken(String email, String password) {
+        String body = String.format(
+                "{\"identifier\":\"%s\",\"password\":\"%s\"}",
+                email, password
+        );
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/auth/login"))
+                .timeout(Duration.ofSeconds(5))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            int status = response.statusCode();
+            if (status != 200) {
+                throw new IllegalStateException(
+                        "Setup failed: login returned " + status);
+            }
+            return extractToken(response.body());
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException("Setup failed: login unavailable (" + e.getMessage() + ")", e);
+        }
+    }
+
+    private static String extractToken(String responseBody) {
+        int idx = responseBody.indexOf("\"token\":\"");
+        if (idx == -1) {
+            throw new IllegalStateException("Setup failed: token not found in login response");
+        }
+        int start = idx + 9;
+        int end = responseBody.indexOf("\"", start);
+        return responseBody.substring(start, end);
+    }
+
     private static void sendRegistration(String body) {
 
         HttpRequest request = HttpRequest.newBuilder()
