@@ -69,15 +69,84 @@ public class OrderApiClient {
         };
     }
 
+    public static Long getTaskIdForOrder(String operatorToken, String station, String orderId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/tasks/station/" + station))
+                .timeout(Duration.ofSeconds(5))
+                .header("Authorization", "Bearer " + operatorToken)
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            int status = response.statusCode();
+            if (status < 200 || status > 299) {
+                throw new IllegalStateException(
+                        "Setup failed: GET tasks returned " + status + " — " + response.body());
+            }
+            return extractTaskIdForOrder(response.body(), orderId);
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Setup failed: GET tasks unavailable (" + e.getMessage() + ")", e);
+        }
+    }
+
+    public static int startTask(String operatorToken, Long taskId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/tasks/" + taskId + "/start"))
+                .timeout(Duration.ofSeconds(5))
+                .header("Authorization", "Bearer " + operatorToken)
+                .method("PATCH", HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode();
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Setup failed: PATCH task start unavailable (" + e.getMessage() + ")", e);
+        }
+    }
+
     private static String extractOrderId(String responseBody) {
-        int idx = responseBody.indexOf("\"id\":");
+        String key = "\"orderId\":";
+        int idx = responseBody.indexOf(key);
+        if (idx == -1) {
+            key = "\"id\":";
+            idx = responseBody.indexOf(key);
+        }
         if (idx == -1) return null;
-        int start = idx + 5;
+        int start = idx + key.length();
         while (start < responseBody.length() && responseBody.charAt(start) == ' ') start++;
         int end = start;
         while (end < responseBody.length()
                 && responseBody.charAt(end) != ','
                 && responseBody.charAt(end) != '}') end++;
         return responseBody.substring(start, end).trim();
+    }
+
+    private static Long extractTaskIdForOrder(String responseBody, String orderId) {
+        String target = "\"orderId\":" + orderId;
+        int idx = responseBody.indexOf(target);
+        if (idx == -1) {
+            target = "\"orderId\": " + orderId;
+            idx = responseBody.indexOf(target);
+        }
+        if (idx == -1) return null;
+        int objStart = responseBody.lastIndexOf("{", idx);
+        int objEnd = responseBody.indexOf("}", idx);
+        if (objStart == -1 || objEnd == -1) return null;
+        String block = responseBody.substring(objStart, objEnd + 1);
+        int idIdx = block.indexOf("\"id\":");
+        if (idIdx == -1) return null;
+        int start = idIdx + 5;
+        while (start < block.length() && block.charAt(start) == ' ') start++;
+        int end = start;
+        while (end < block.length() && block.charAt(end) != ',' && block.charAt(end) != '}') end++;
+        try {
+            return Long.parseLong(block.substring(start, end).trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }
