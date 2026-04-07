@@ -18,6 +18,20 @@ public class RegistrationApiClient {
                 data.email(), data.username(), data.password()
         );
 
+        sendRegistration(body);
+    }
+
+    public static void registerWithRole(RegistrationData data, String role) {
+        String body = String.format(
+                "{\"email\":\"%s\",\"username\":\"%s\",\"password\":\"%s\",\"role\":\"%s\"}",
+                data.email(), data.username(), data.password(), role
+        );
+
+        sendRegistration(body);
+    }
+
+    private static void sendRegistration(String body) {
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/auth/register"))
                 .timeout(Duration.ofSeconds(5))

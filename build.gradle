@@ -58,8 +58,10 @@ test {
     useJUnitPlatform()
     def baseUrl = System.getProperty("webdriver.base.url")
     def backendUrl = System.getProperty("foodtech.backend.base.url")
+    def cucumberTags = System.getProperty("cucumber.filter.tags")
     if (baseUrl) systemProperty "webdriver.base.url", baseUrl
     if (backendUrl) systemProperty "foodtech.backend.base.url", backendUrl
+    if (cucumberTags) systemProperty "cucumber.filter.tags", cucumberTags
 }
 
 serenity {
