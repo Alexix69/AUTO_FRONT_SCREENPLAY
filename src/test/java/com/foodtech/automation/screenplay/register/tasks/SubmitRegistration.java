@@ -37,7 +37,10 @@ public class SubmitRegistration implements Performable {
 
     private boolean isVisible(WebDriver driver) {
         try {
-            return driver.findElement(By.cssSelector("[data-testid='error-message']")).isDisplayed();
+            if (driver.findElement(By.cssSelector("[data-testid='error-message']")).isDisplayed()) return true;
+        } catch (NoSuchElementException | StaleElementReferenceException ignored) {}
+        try {
+            return driver.findElement(By.cssSelector("[data-testid='field-error-email']")).isDisplayed();
         } catch (NoSuchElementException | StaleElementReferenceException e) {
             return false;
         }

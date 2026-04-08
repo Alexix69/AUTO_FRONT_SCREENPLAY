@@ -22,6 +22,9 @@ public class AuthenticationPageUI {
     public static final Target ERROR_MESSAGE =
             Target.the("error message").locatedBy("[data-testid='error-message']");
 
+    public static final Target FIELD_ERROR_EMAIL =
+            Target.the("email field error").locatedBy("[data-testid='field-error-email']");
+
     public static final Target DEMO_MODE_CHECKBOX =
             Target.the("demo mode checkbox").locatedBy("[data-testid='demo-mode-checkbox']");
 

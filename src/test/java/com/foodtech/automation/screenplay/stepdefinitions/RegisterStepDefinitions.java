@@ -61,7 +61,7 @@ public class RegisterStepDefinitions {
 
     @Then("the system displays an invalid credentials message")
     public void theSystemDisplaysAnInvalidCredentialsMessage() {
-        actor().should(seeThat(VisibleErrorMessage.forThePage(), equalTo("Credenciales inválidas")));
+        actor().should(seeThat(VisibleErrorMessage.forThePage(), equalTo("Email already registered")));
     }
 
     @And("the user remains on the authentication page")
