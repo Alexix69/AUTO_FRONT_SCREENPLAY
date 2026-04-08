@@ -18,6 +18,6 @@ public class TestDataFactory {
     }
 
     public static RegistrationData createRegistrationData() {
-        return new RegistrationData(generateEmail(), generateUsername(), generatePassword("A"));
+        return new RegistrationData(generateEmail(), generateUsername(), generatePassword("A"), "MESERO");
     }
 }

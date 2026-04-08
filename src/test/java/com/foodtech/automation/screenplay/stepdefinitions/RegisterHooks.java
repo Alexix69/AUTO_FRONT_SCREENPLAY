@@ -30,11 +30,12 @@ public class RegisterHooks {
         OnStage.setTheStage(new OnlineCast());
         OnStage.theActorCalled("User");
         RegistrationData dataA = TestDataFactory.createRegistrationData();
-        RegistrationApiClient.register(dataA);
+        RegistrationApiClient.registerWithRole(dataA, dataA.role());
         RegistrationData conflicting = new RegistrationData(
                 dataA.email(),
                 dataA.username(),
-                TestDataFactory.generatePassword("B")
+                TestDataFactory.generatePassword("B"),
+                dataA.role()
         );
         TestContext.setConflictingUser(conflicting);
     }

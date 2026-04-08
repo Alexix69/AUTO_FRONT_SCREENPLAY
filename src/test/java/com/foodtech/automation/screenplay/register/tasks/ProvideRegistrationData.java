@@ -4,6 +4,7 @@ import com.foodtech.automation.screenplay.register.ui.AuthenticationPageUI;
 import com.foodtech.automation.screenplay.support.RegistrationData;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Performable;
+import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 
 public class ProvideRegistrationData implements Performable {
@@ -23,7 +24,9 @@ public class ProvideRegistrationData implements Performable {
         actor.attemptsTo(
                 Enter.theValue(data.email()).into(AuthenticationPageUI.EMAIL_INPUT),
                 Enter.theValue(data.username()).into(AuthenticationPageUI.USERNAME_INPUT),
-                Enter.theValue(data.password()).into(AuthenticationPageUI.PASSWORD_INPUT)
+                Enter.theValue(data.password()).into(AuthenticationPageUI.PASSWORD_INPUT),
+                Click.on(AuthenticationPageUI.ROLE_SELECT_TRIGGER),
+                Click.on(AuthenticationPageUI.roleOption(data.role()))
         );
     }
 }

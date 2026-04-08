@@ -24,4 +24,12 @@ public class AuthenticationPageUI {
 
     public static final Target DEMO_MODE_CHECKBOX =
             Target.the("demo mode checkbox").locatedBy("[data-testid='demo-mode-checkbox']");
+
+    public static final Target ROLE_SELECT_TRIGGER =
+            Target.the("role select trigger").locatedBy("[data-testid='role-select-trigger']");
+
+    public static Target roleOption(String role) {
+        return Target.the("role option " + role.toLowerCase())
+                .locatedBy("[data-testid='role-option-" + role.toLowerCase() + "']");
+    }
 }
