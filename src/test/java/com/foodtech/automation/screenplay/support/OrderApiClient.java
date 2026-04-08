@@ -5,6 +5,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderApiClient {
@@ -67,6 +68,47 @@ public class OrderApiClient {
             case "COLD_KITCHEN" -> "COLD_DISH";
             default -> throw new IllegalArgumentException("Unknown station: " + station);
         };
+    }
+
+    public static List<Long> getTaskIdsByStatus(String operatorToken, String station, String status) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/tasks/station/" + station + "?status=" + status))
+                .timeout(Duration.ofSeconds(5))
+                .header("Authorization", "Bearer " + operatorToken)
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() < 200 || response.statusCode() > 299) {
+                return new ArrayList<>();
+            }
+            return extractAllTaskIds(response.body());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    public static List<Long> getInPrepTaskIds(String operatorToken, String station) {
+        return getTaskIdsByStatus(operatorToken, station, "IN_PREPARATION");
+    }
+
+    private static List<Long> extractAllTaskIds(String responseBody) {
+        List<Long> ids = new ArrayList<>();
+        int pos = 0;
+        while (true) {
+            int idx = responseBody.indexOf("\"id\":", pos);
+            if (idx == -1) break;
+            int start = idx + 5;
+            while (start < responseBody.length() && responseBody.charAt(start) == ' ') start++;
+            int end = start;
+            while (end < responseBody.length() && responseBody.charAt(end) != ',' && responseBody.charAt(end) != '}') end++;
+            try {
+                ids.add(Long.parseLong(responseBody.substring(start, end).trim()));
+            } catch (NumberFormatException ignored) {
+            }
+            pos = end;
+        }
+        return ids;
     }
 
     public static Long getTaskIdForOrder(String operatorToken, String station, String orderId) {

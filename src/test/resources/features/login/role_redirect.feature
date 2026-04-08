@@ -1,3 +1,5 @@
+@capability:UI
+@feature:RoleRedirect
 Feature: Role-Based View Redirection and Isolation Post-Login
   As a registered restaurant staff member
   I want to be redirected to my role-specific view after login
@@ -31,4 +33,4 @@ Feature: Role-Based View Redirection and Isolation Post-Login
   Scenario: COCINERO sees hot kitchen and cold kitchen navigation tabs
     Given a registered user with role COCINERO exists in the system
     When the user logs in with valid credentials on the authentication page
-    Then the cocina caliente and cocina fria tabs are visible in the kitchen view
+    Then the three board status tabs are visible on the kitchen board

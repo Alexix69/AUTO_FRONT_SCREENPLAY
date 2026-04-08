@@ -1,3 +1,5 @@
+@capability:UI
+@feature:OperatorTaskBoard
 Feature: Operator Task Board — Role-Based Task Management by Status
   As a kitchen or bar operator
   I want to see only my station's tasks organized by status

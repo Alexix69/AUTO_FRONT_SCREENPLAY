@@ -1,17 +1,13 @@
 package com.foodtech.automation.screenplay.stepdefinitions;
 
-import com.foodtech.automation.screenplay.login.tasks.LoginWithCredentials;
 import com.foodtech.automation.screenplay.operator.questions.ErrorBannerIsVisible;
 import com.foodtech.automation.screenplay.operator.questions.StartButtonVisibleOnCards;
 import com.foodtech.automation.screenplay.operator.questions.TaskMovedToInPreparation;
 import com.foodtech.automation.screenplay.operator.questions.TaskRemainsInPending;
 import com.foodtech.automation.screenplay.operator.tasks.ClickStartPreparation;
+import com.foodtech.automation.screenplay.operator.tasks.NavigateToOperatorTab;
 import com.foodtech.automation.screenplay.operator.tasks.PreStartThenClick;
-import com.foodtech.automation.screenplay.operator.tasks.SelectTab;
-import com.foodtech.automation.screenplay.operator.tasks.WaitForBoardToLoad;
 import com.foodtech.automation.screenplay.operator.tasks.WaitForTaskToMoveToInPrep;
-import com.foodtech.automation.screenplay.operator.ui.OperatorBoardUI;
-import com.foodtech.automation.screenplay.support.TestContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -42,9 +38,7 @@ public class StartPreparationStepDefinitions {
 
     @When("the operator navigates to the board and views pending tasks")
     public void theOperatorNavigatesToTheBoardAndViewsPendingTasks() {
-        actor().attemptsTo(LoginWithCredentials.usingDataFrom(TestContext.getLoginUser()));
-        actor().attemptsTo(SelectTab.named(OperatorBoardUI.TAB_PENDING));
-        actor().attemptsTo(WaitForBoardToLoad.afterTabSelection());
+        actor().attemptsTo(NavigateToOperatorTab.pending());
     }
 
     @When("the operator clicks the start preparation button")

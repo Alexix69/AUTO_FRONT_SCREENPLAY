@@ -8,7 +8,6 @@ public class TestContext {
     private static final ThreadLocal<String> EXPECTED_STATION = new ThreadLocal<>();
     private static final ThreadLocal<Long> TASK_ID = new ThreadLocal<>();
     private static final ThreadLocal<String> OPERATOR_TOKEN = new ThreadLocal<>();
-    private static final ThreadLocal<String> MESERO_TOKEN = new ThreadLocal<>();
 
     public static void setUser(RegistrationData data) {
         USER.set(data);
@@ -58,14 +57,6 @@ public class TestContext {
         return OPERATOR_TOKEN.get();
     }
 
-    public static void setMeseroToken(String token) {
-        MESERO_TOKEN.set(token);
-    }
-
-    public static String getMeseroToken() {
-        return MESERO_TOKEN.get();
-    }
-
     public static void clear() {
         USER.remove();
         CONFLICTING_USER.remove();
@@ -73,7 +64,6 @@ public class TestContext {
         EXPECTED_STATION.remove();
         TASK_ID.remove();
         OPERATOR_TOKEN.remove();
-        MESERO_TOKEN.remove();
     }
 }
 

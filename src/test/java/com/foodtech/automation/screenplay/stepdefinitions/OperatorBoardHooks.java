@@ -1,5 +1,6 @@
 package com.foodtech.automation.screenplay.stepdefinitions;
 
+import com.foodtech.automation.screenplay.support.DatabaseCleaner;
 import com.foodtech.automation.screenplay.support.LoginData;
 import com.foodtech.automation.screenplay.support.OrderApiClient;
 import com.foodtech.automation.screenplay.support.RegistrationApiClient;
@@ -12,8 +13,11 @@ import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.actors.OnStage;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class OperatorBoardHooks {
+
+    private static final int FIFO_TIMESTAMP_GAP_MS = 150;
 
     @Before("@taskBoardTabsCocinero")
     public void beforeTaskBoardTabsCocinero() {
@@ -66,6 +70,7 @@ public class OperatorBoardHooks {
     public void beforeTaskBoardAggregation() {
         OnStage.setTheStage(new OnlineCast());
         OnStage.theActorCalled("staff member");
+        DatabaseCleaner.completeAllActiveKitchenTasks();
         RegistrationData mesero = TestDataFactory.createRegistrationData();
         RegistrationApiClient.registerWithRole(mesero, "MESERO");
         String token = RegistrationApiClient.loginAndGetToken(mesero.email(), mesero.password());
@@ -93,7 +98,7 @@ public class OperatorBoardHooks {
     }
 
     @Before("@taskBoardFifo")
-    public void beforeTaskBoardFifo() throws InterruptedException {
+    public void beforeTaskBoardFifo() {
         OnStage.setTheStage(new OnlineCast());
         OnStage.theActorCalled("staff member");
         RegistrationData mesero = TestDataFactory.createRegistrationData();
@@ -101,10 +106,10 @@ public class OperatorBoardHooks {
         String token = RegistrationApiClient.loginAndGetToken(mesero.email(), mesero.password());
         OrderApiClient.createOrder(token, 7, List.of(
                 OrderApiClient.createOrderItem("Mojito Primero", 1, "BAR")));
-        Thread.sleep(150);
+        try { TimeUnit.MILLISECONDS.sleep(FIFO_TIMESTAMP_GAP_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         OrderApiClient.createOrder(token, 8, List.of(
                 OrderApiClient.createOrderItem("Mojito Segundo", 1, "BAR")));
-        Thread.sleep(150);
+        try { TimeUnit.MILLISECONDS.sleep(FIFO_TIMESTAMP_GAP_MS); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
         OrderApiClient.createOrder(token, 9, List.of(
                 OrderApiClient.createOrderItem("Mojito Tercero", 1, "BAR")));
         RegistrationData operator = TestDataFactory.createRegistrationData();
@@ -117,6 +122,7 @@ public class OperatorBoardHooks {
     public void beforeTaskBoardEmptyState() {
         OnStage.setTheStage(new OnlineCast());
         OnStage.theActorCalled("staff member");
+        DatabaseCleaner.completeAllActiveKitchenTasks();
         RegistrationData operator = TestDataFactory.createRegistrationData();
         RegistrationApiClient.registerWithRole(operator, "COCINERO");
         TestContext.setLoginUser(new LoginData(operator.email(), operator.password()));

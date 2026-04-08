@@ -1,6 +1,6 @@
 package com.foodtech.automation.screenplay.stepdefinitions;
 
-import com.foodtech.automation.screenplay.login.questions.KitchenTabsAreVisible;
+import com.foodtech.automation.screenplay.login.questions.BoardTabsAreVisible;
 import com.foodtech.automation.screenplay.login.questions.OtherRoleNavigationIsHidden;
 import com.foodtech.automation.screenplay.login.questions.RedirectedToPath;
 import com.foodtech.automation.screenplay.login.tasks.LoginWithCredentials;
@@ -49,8 +49,8 @@ public class LoginStepDefinitions {
         actor().should(seeThat(OtherRoleNavigationIsHidden.inTheNavigationBar(), is(true)));
     }
 
-    @Then("the cocina caliente and cocina fria tabs are visible in the kitchen view")
-    public void theCocinaCalienteAndCocinaFriaTabsAreVisible() {
-        actor().should(seeThat(KitchenTabsAreVisible.forThePage(), is(true)));
+    @Then("the three board status tabs are visible on the kitchen board")
+    public void theThreeBoardStatusTabsAreVisible() {
+        actor().should(seeThat(BoardTabsAreVisible.forThePage(), is(true)));
     }
 }

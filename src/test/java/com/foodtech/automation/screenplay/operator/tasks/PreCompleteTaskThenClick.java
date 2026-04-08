@@ -5,7 +5,6 @@ import com.foodtech.automation.screenplay.support.TestContext;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.Tasks;
-import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.targets.Target;
 
 public class PreCompleteTaskThenClick implements Task {

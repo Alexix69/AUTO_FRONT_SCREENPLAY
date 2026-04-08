@@ -1,18 +1,14 @@
 package com.foodtech.automation.screenplay.stepdefinitions;
 
-import com.foodtech.automation.screenplay.login.tasks.LoginWithCredentials;
-import com.foodtech.automation.screenplay.operator.questions.FinishButtonAbsentFromTab;
 import com.foodtech.automation.screenplay.operator.questions.FinishButtonVisibleOnInPrepCards;
 import com.foodtech.automation.screenplay.operator.questions.KitchenErrorBannerIsVisible;
 import com.foodtech.automation.screenplay.operator.questions.TaskMovedToCompleted;
 import com.foodtech.automation.screenplay.operator.questions.TaskRemainsInInPreparation;
 import com.foodtech.automation.screenplay.operator.tasks.ClickFinishPreparation;
+import com.foodtech.automation.screenplay.operator.tasks.NavigateToOperatorTab;
 import com.foodtech.automation.screenplay.operator.tasks.PreCompleteTaskThenClick;
-import com.foodtech.automation.screenplay.operator.tasks.SelectTab;
-import com.foodtech.automation.screenplay.operator.tasks.WaitForBoardToLoad;
+import com.foodtech.automation.screenplay.operator.tasks.VerifyFinishButtonAbsentInAllOtherTabs;
 import com.foodtech.automation.screenplay.operator.tasks.WaitForTaskToMoveToCompleted;
-import com.foodtech.automation.screenplay.operator.ui.OperatorBoardUI;
-import com.foodtech.automation.screenplay.support.TestContext;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -43,9 +39,7 @@ public class FinishPreparationStepDefinitions {
 
     @When("the operator navigates to the board and views the in preparation section")
     public void theOperatorNavigatesToTheBoardAndViewsInPrep() {
-        actor().attemptsTo(LoginWithCredentials.usingDataFrom(TestContext.getLoginUser()));
-        actor().attemptsTo(SelectTab.named(OperatorBoardUI.TAB_IN_PREPARATION));
-        actor().attemptsTo(WaitForBoardToLoad.afterTabSelection());
+        actor().attemptsTo(NavigateToOperatorTab.inPreparation());
     }
 
     @And("the operator clicks the finish preparation button")
@@ -65,12 +59,7 @@ public class FinishPreparationStepDefinitions {
 
     @Then("no task card in Pendientes or Completadas displays the Completar button")
     public void noTaskCardInOtherTabsDisplaysCompletarButton() {
-        actor().attemptsTo(SelectTab.named(OperatorBoardUI.TAB_PENDING));
-        actor().attemptsTo(WaitForBoardToLoad.afterTabSelection());
-        actor().should(seeThat(FinishButtonAbsentFromTab.inCurrentTab(), is(true)));
-        actor().attemptsTo(SelectTab.named(OperatorBoardUI.TAB_COMPLETED));
-        actor().attemptsTo(WaitForBoardToLoad.afterTabSelection());
-        actor().should(seeThat(FinishButtonAbsentFromTab.inCurrentTab(), is(true)));
+        actor().attemptsTo(VerifyFinishButtonAbsentInAllOtherTabs.onBothNonPrepTabs());
     }
 
     @Then("the task moves to the completed section")

@@ -1,3 +1,5 @@
+@capability:UI
+@feature:UserRegistration
 Feature: User Registration
   As a new restaurant staff member
   I want to create an account from the authentication page
