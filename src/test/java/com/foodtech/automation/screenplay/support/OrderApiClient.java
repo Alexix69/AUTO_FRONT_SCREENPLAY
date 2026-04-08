@@ -108,6 +108,55 @@ public class OrderApiClient {
         }
     }
 
+    public static int completeTask(String operatorToken, Long taskId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/tasks/" + taskId + "/complete"))
+                .timeout(Duration.ofSeconds(5))
+                .header("Authorization", "Bearer " + operatorToken)
+                .method("PATCH", HttpRequest.BodyPublishers.noBody())
+                .build();
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode();
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Setup failed: PATCH task complete unavailable (" + e.getMessage() + ")", e);
+        }
+    }
+
+    public static String getOrderStatus(String meseroToken, String orderId) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(TestConfig.getBackendBaseUrl() + "/api/orders/" + orderId + "/status"))
+                .timeout(Duration.ofSeconds(5))
+                .header("Authorization", "Bearer " + meseroToken)
+                .GET()
+                .build();
+        try {
+            HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            int status = response.statusCode();
+            if (status < 200 || status > 299) {
+                throw new IllegalStateException(
+                        "Setup failed: GET order status returned " + status + " — " + response.body());
+            }
+            return extractStatusField(response.body());
+        } catch (IllegalStateException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                    "Setup failed: GET order status unavailable (" + e.getMessage() + ")", e);
+        }
+    }
+
+    private static String extractStatusField(String responseBody) {
+        String key = "\"status\":\"";
+        int idx = responseBody.indexOf(key);
+        if (idx == -1) return null;
+        int start = idx + key.length();
+        int end = responseBody.indexOf("\"", start);
+        if (end == -1) return null;
+        return responseBody.substring(start, end);
+    }
+
     private static String extractOrderId(String responseBody) {
         String key = "\"orderId\":";
         int idx = responseBody.indexOf(key);
